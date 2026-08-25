@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Work Sans', system-ui, -apple-system, sans-serif; }
+    a { color: inherit; text-decoration: none; }
+    a:hover { color: {{accent}}; }
+    .display { font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; }
+  </style>
+</helmet>
+
+<div style="background:#170f11; color:#f5f5f4; min-height:100%; width:100%;">
+
+  <!-- NAV -->
+  <nav style="display:flex; align-items:center; justify-content:space-between; padding:20px 56px; border-bottom:1px solid #2e1c20;">
+    <div class="display" style="font-size:26px; font-weight:700; letter-spacing:0.5px; color:{{accent}};">MARIOFLIX</div>
+    <div style="display:flex; gap:32px; align-items:center;">
+      <a href="#" style="font-size:14px; color:#f5f5f4;">Início</a>
+      <a href="#" style="font-size:14px; color:#c2a3a8;">Filmes</a>
+      <a href="#" style="font-size:14px; color:#c2a3a8;">Categorias</a>
+      <div style="width:34px; height:34px; border-radius:6px; background:#2e1c20; display:flex; align-items:center; justify-content:center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c2a3a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section style="position:relative; height:460px; display:flex; align-items:flex-end; overflow:hidden; background:linear-gradient(120deg,#4a0f1f,#170f11 75%);">
+    <div style="position:absolute; inset:0; background:radial-gradient(ellipse at 30% 20%, rgba(239,35,60,0.30), transparent 60%);"></div>
+    <div style="position:relative; padding:0 56px 48px; display:flex; flex-direction:column; gap:14px; max-width:640px;">
+      <div style="display:flex; gap:8px;">
+        <span style="font-size:11px; letter-spacing:1px; text-transform:uppercase; color:{{accent}}; border:1px solid {{accent}}; padding:4px 10px; border-radius:4px;">Destaque</span>
+        <span style="font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#dcb0b6; border:1px solid #4a2a30; padding:4px 10px; border-radius:4px;">Ação • Drama • Guerra</span>
+      </div>
+      <h1 class="display" style="font-size:56px; line-height:1; margin:0; font-weight:700;">Braveheart</h1>
+      <div style="display:flex; gap:16px; align-items:center; font-size:13px; color:#c2a3a8;">
+        <span>1995</span>
+        <span>•</span>
+        <span style="color:#f5c518;">★ 4.0</span>
+        <span>•</span>
+        <span>177 min</span>
+      </div>
+      <p style="font-size:14px; line-height:1.6; color:#e5cdd1; margin:0;">Sinopse do filme (texto de exemplo — virá da base de dados).</p>
+      <div style="display:flex; gap:24px; font-size:13px; color:#b88f95; margin-top:4px;">
+        <span>Diretor: <em style="color:#eee0e2; font-style:normal;">Mel Gibson</em></span>
+        <span>Elenco: <em style="color:#eee0e2; font-style:normal;">Mel Gibson, Catherine McCormack, Sophie Marceau</em></span>
+      </div>
+      <div style="display:flex; gap:12px; margin-top:14px;">
+        <button style="display:flex; align-items:center; gap:8px; background:{{accent}}; color:#fff; border:none; padding:12px 22px; border-radius:6px; font-size:14px; font-weight:600; cursor:pointer;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+          Ver detalhes
+        </button>
+        <button style="background:#2e1c20; color:#f5f5f4; border:none; padding:12px 22px; border-radius:6px; font-size:14px; font-weight:600; cursor:pointer;">+ Minha lista</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATALOG -->
+  <section style="padding:44px 56px 64px;">
+    <h2 class="display" style="font-size:24px; font-weight:600; margin:0 0 20px;">Todos os filmes</h2>
+    <div style="display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:22px;">
+      <sc-for list="{{movies}}" as="m" hint-placeholder-count="10">
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="width:100%; aspect-ratio:2/3; border-radius:8px; background:{{m.gradient}}; position:relative; overflow:hidden;">
+            <div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.55); border-radius:4px; padding:2px 7px; font-size:11px; color:#f5c518;">★ {{m.rating}}</div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:2px;">
+            <span style="font-size:14px; font-weight:600; color:#f5f5f4;">{{m.title}} <span style="color:#a1878b; font-weight:400;">({{m.year}})</span></span>
+            <span style="font-size:12px; color:#a38a8e;">{{m.genres}}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{
+  "accent": {"editor":"color","default":"#ef233c","options":["#ef233c","#ff4d5e","#e0263f","#c81e3a"]}
+}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#ef233c';
+    const movies = [
+      { title: 'Toy Story', year: 1995, genres: 'Animação • Aventura • Comédia', rating: '3.9', gradient: 'linear-gradient(160deg,#3a1c71,#8b5fbf)' },
+      { title: 'Jumanji', year: 1995, genres: 'Aventura • Fantasia', rating: '3.4', gradient: 'linear-gradient(160deg,#1c4e3a,#3f8f6d)' },
+      { title: 'Heat', year: 1995, genres: 'Ação • Crime • Suspense', rating: '3.9', gradient: 'linear-gradient(160deg,#1c1c2e,#3a3a5e)' },
+      { title: 'GoldenEye', year: 1995, genres: 'Ação • Aventura', rating: '3.4', gradient: 'linear-gradient(160deg,#2e1c1c,#8a3a3a)' },
+      { title: 'Sabrina', year: 1995, genres: 'Comédia • Romance', rating: '3.4', gradient: 'linear-gradient(160deg,#3a2c1c,#a67c3a)' },
+      { title: 'Pulp Fiction', year: 1994, genres: 'Crime • Drama • Suspense', rating: '4.2', gradient: 'linear-gradient(160deg,#141414,#3a3a3a)' },
+      { title: 'Pocahontas', year: 1995, genres: 'Animação • Romance', rating: '3.1', gradient: 'linear-gradient(160deg,#1c3a2e,#5fa88f)' },
+      { title: 'Apollo 13', year: 1995, genres: 'Aventura • Drama', rating: '3.9', gradient: 'linear-gradient(160deg,#1c2a3a,#3a5f8a)' },
+      { title: 'Casino', year: 1995, genres: 'Crime • Drama', rating: '3.8', gradient: 'linear-gradient(160deg,#2e1c0e,#8a5a1e)' },
+      { title: 'Braveheart', year: 1995, genres: 'Ação • Drama • Guerra', rating: '4.0', gradient: 'linear-gradient(160deg,#3a0f1f,#8a2a3a)' }
+    ];
+    return { accent, movies };
+  }
+}
+</script>
+</body>
+</html>

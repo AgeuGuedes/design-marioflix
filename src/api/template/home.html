@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}MarioFlix - Home{% endblock %}
+{% block content %}
+
+<section class="hero-carousel">
+  {% for filme in destaques %}
+  <div class="hero-slide {{ 'active' if loop.first else '' }}"
+    style="background-image: linear-gradient(90deg, #170f11 15%, rgba(23,15,17,0.55) 55%, rgba(23,15,17,0.15)), linear-gradient(0deg, #170f11 0%, transparent 40%), url('{{ filme.backdrop_url }}');">
+    <div class="hero-content">
+      <div class="badges">
+        <span class="badge badge-accent">Destaque</span>
+        <span class="badge">{{ filme.genres_pt }}</span>
+      </div>
+      <h1>{{ filme.title }}</h1>
+      <p class="meta-line">
+        Diretor: <strong>{{ filme.diretor if filme.diretor else "Não informado" }}</strong>
+      </p>
+      <p class="meta-line">
+        Elenco: <strong>{{ filme.atores if filme.atores else "Não informado" }}</strong>
+      </p>
+      {% if filme.nota_media %}
+      <p class="meta-line">
+        Nota do público: <strong>★ {{ filme.nota_media }}</strong> ({{ filme.quantidade_avaliacoes }} avaliações)
+      </p>
+      {% endif %}
+      <a href="/filme/{{ filme.movieId }}" class="btn btn-primary">Ver detalhes</a>
+    </div>
+  </div>
+  {% endfor %}
+
+  <button class="hero-arrow hero-arrow-left" aria-label="Destaque anterior">‹</button>
+  <button class="hero-arrow hero-arrow-right" aria-label="Próximo destaque">›</button>
+
+  <div class="hero-dots">
+    {% for filme in destaques %}
+    <button class="hero-dot {{ 'active' if loop.first else '' }}" data-index="{{ loop.index0 }}" aria-label="Ir para destaque {{ loop.index }}"></button>
+    {% endfor %}
+  </div>
+</section>
+
+{% for fileira in fileiras %}
+<section class="row">
+  <h2 class="row-title">{{ fileira.titulo }}</h2>
+  <div class="row-track-wrap">
+    <button class="row-arrow row-arrow-left" aria-label="Rolar para a esquerda">‹</button>
+    <div class="row-track">
+      {% for filme in fileira.filmes %}
+      <a class="card" href="/filme/{{ filme.movieId }}">
+        <div class="poster-wrap">
+          {% if filme.poster_url %}
+          <img class="poster" src="{{ filme.poster_url }}" alt="Pôster de {{ filme.title }}" loading="lazy">
+          {% else %}
+          <div class="poster poster-fallback" style="background: linear-gradient(160deg, hsl({{ filme.hue }},45%,18%), hsl({{ (filme.hue + 40) % 360 }},45%,32%));"></div>
+          {% endif %}
+          {% if filme.nota_media %}
+          <span class="poster-rating">★ {{ filme.nota_media }}</span>
+          {% endif %}
+        </div>
+        <div class="card-info">
+          <span class="card-title">{{ filme.title }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    <button class="row-arrow row-arrow-right" aria-label="Rolar para a direita">›</button>
+  </div>
+</section>
+{% endfor %}
+
+<div class="catalog-footer">
+  <a href="/filmes" class="link-more">Ver todos os filmes →</a>
+</div>
+
+{% endblock %}

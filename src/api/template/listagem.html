@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}MarioFlix - Filmes{% endblock %}
+{% block content %}
+
+<section class="catalog catalog-page">
+  <h2>Todos os filmes <span class="count">({{ filmes|length }})</span></h2>
+  <div class="grid">
+    {% for filme in filmes %}
+    <a class="card" href="/filme/{{ filme.movieId }}">
+      <div class="poster-wrap">
+        {% if filme.poster_url %}
+        <img class="poster" src="{{ filme.poster_url }}" alt="Pôster de {{ filme.title }}" loading="lazy">
+        {% else %}
+        <div class="poster poster-fallback" style="background: linear-gradient(160deg, hsl({{ filme.hue }},45%,18%), hsl({{ (filme.hue + 40) % 360 }},45%,32%));"></div>
+        {% endif %}
+        {% if filme.nota_media %}
+        <span class="poster-rating">★ {{ filme.nota_media }}</span>
+        {% endif %}
+      </div>
+      <div class="card-info">
+        <span class="card-title">{{ filme.title }}</span>
+        <span class="card-genres">{{ filme.genres_pt }}</span>
+        <span class="card-director">{{ filme.diretor if filme.diretor else "Diretor não informado" }}</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}MarioFlix - {{ filme.title }}{% endblock %}
+{% block content %}
+
+<section class="detail-hero"
+  {% if filme.backdrop_url %}
+  style="background-image: linear-gradient(90deg, #170f11 25%, rgba(23,15,17,0.65) 60%, rgba(23,15,17,0.25)), linear-gradient(0deg, #170f11 0%, transparent 45%), url('{{ filme.backdrop_url }}');"
+  {% else %}
+  style="background: linear-gradient(120deg, hsl({{ filme.hue }},50%,16%), #170f11 75%);"
+  {% endif %}
+>
+  <div class="detail-content">
+    <a href="/filmes" class="back-link">← Voltar para o catálogo</a>
+
+    <div class="detail-main">
+      {% if filme.poster_url %}
+      <img class="detail-poster" src="{{ filme.poster_url }}" alt="Pôster de {{ filme.title }}">
+      {% else %}
+      <div class="detail-poster poster-fallback" style="background: linear-gradient(160deg, hsl({{ filme.hue }},45%,18%), hsl({{ (filme.hue + 40) % 360 }},45%,32%));"></div>
+      {% endif %}
+
+      <div class="detail-info">
+        <span class="badge">{{ filme.genres_pt }}</span>
+        <h1>{{ filme.title }}</h1>
+
+        <div class="detail-facts">
+          <div class="fact">
+            <span class="fact-label">Diretor</span>
+            <span class="fact-value">{{ filme.diretor if filme.diretor else "Não informado" }}</span>
+          </div>
+          <div class="fact">
+            <span class="fact-label">Elenco</span>
+            <span class="fact-value">{{ filme.atores if filme.atores else "Não informado" }}</span>
+          </div>
+          <div class="fact">
+            <span class="fact-label">Categorias</span>
+            <span class="fact-value">{{ filme.genres_pt }}</span>
+          </div>
+          {% if filme.nota_media %}
+          <div class="fact">
+            <span class="fact-label">Nota do público</span>
+            <span class="fact-value">★ {{ filme.nota_media }} ({{ filme.quantidade_avaliacoes }} avaliações)</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
