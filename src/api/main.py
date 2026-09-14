@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from src.data.loader import carregar_filmes
+from src.recommenders.content_recommender import filmes_parecidos
 from src.services.catalog_service import buscar_filme
 from src.services.home_service import montar_home
 
@@ -38,4 +39,5 @@ def detalhe(request: Request, movie_id: str):
         raise HTTPException(status_code=404, detail="Filme não encontrado")
     return templates.TemplateResponse(request, "detalhe.html", {
         "filme": filme,
+        "parecidos": filmes_parecidos(filme, FILMES),
     })

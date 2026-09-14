@@ -1,6 +1,8 @@
-from src.recommenders.home_recommender import aleatorio, mais_avaliados, top10
+from src.data.loader import GENEROS_PT
+from src.recommenders.home_recommender import aleatorio, mais_avaliados, top10, top10_por_genero
 
 DESTAQUES_TITULOS = ["Braveheart", "Pulp Fiction", "Star Wars: Episode IV", "Casino", "Heat"]
+GENEROS_HOME = ["Sci-Fi", "Comedy", "Action"]
 
 
 def montar_destaques(filmes):
@@ -14,11 +16,16 @@ def montar_destaques(filmes):
 
 
 def montar_home(filmes):
+    fileiras_genero = [
+        {"titulo": f"Top 10 {GENEROS_PT.get(genero, genero)}", "filmes": top10_por_genero(filmes, genero)}
+        for genero in GENEROS_HOME
+    ]
     return {
         "destaques": montar_destaques(filmes),
         "fileiras": [
             {"titulo": "Top 10 mais bem avaliados", "filmes": top10(filmes)},
             {"titulo": "Mais avaliados pelo público", "filmes": mais_avaliados(filmes)},
+            *[f for f in fileiras_genero if f["filmes"]],
             {"titulo": "Descubra algo novo", "filmes": aleatorio(filmes)},
         ],
     }

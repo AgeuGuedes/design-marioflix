@@ -48,4 +48,33 @@
   </div>
 </section>
 
+{% if parecidos %}
+<section class="row">
+  <h2 class="row-title">Filmes parecidos</h2>
+  <div class="row-track-wrap">
+    <button class="row-arrow row-arrow-left" aria-label="Rolar para a esquerda">‹</button>
+    <div class="row-track">
+      {% for parecido in parecidos %}
+      <a class="card" href="/filme/{{ parecido.movieId }}">
+        <div class="poster-wrap">
+          {% if parecido.poster_url %}
+          <img class="poster" src="{{ parecido.poster_url }}" alt="Pôster de {{ parecido.title }}" loading="lazy">
+          {% else %}
+          <div class="poster poster-fallback" style="background: linear-gradient(160deg, hsl({{ parecido.hue }},45%,18%), hsl({{ (parecido.hue + 40) % 360 }},45%,32%));"></div>
+          {% endif %}
+          {% if parecido.nota_media %}
+          <span class="poster-rating">★ {{ parecido.nota_media }}</span>
+          {% endif %}
+        </div>
+        <div class="card-info">
+          <span class="card-title">{{ parecido.title }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    <button class="row-arrow row-arrow-right" aria-label="Rolar para a direita">›</button>
+  </div>
+</section>
+{% endif %}
+
 {% endblock %}
