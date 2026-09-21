@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from src.data.loader import carregar_filmes
+from src.data.ratings_matrix import carregar_matriz_usuario_item
 from src.recommenders.content_recommender import filmes_parecidos
 from src.services.catalog_service import buscar_filme
 from src.services.home_service import montar_home
@@ -17,11 +18,12 @@ templates = Jinja2Templates(directory=BASE_DIR / "template")
 
 FILMES = carregar_filmes()
 FILMES_POR_ID = {f["movieId"]: f for f in FILMES}
+NOTAS_POR_USUARIO, NOTAS_POR_FILME = carregar_matriz_usuario_item()
 
 
 @app.get("/")
 def home(request: Request):
-    contexto = montar_home(FILMES)
+    contexto = montar_home(FILMES, NOTAS_POR_USUARIO, NOTAS_POR_FILME, FILMES_POR_ID)
     return templates.TemplateResponse(request, "home.html", contexto)
 
 

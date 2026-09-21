@@ -1,8 +1,10 @@
 from src.data.loader import GENEROS_PT
 from src.recommenders.home_recommender import aleatorio, mais_avaliados, top10, top10_por_genero
+from src.recommenders.item_based_recommender import recomendar as recomendar_item_item
 
 DESTAQUES_TITULOS = ["Braveheart", "Pulp Fiction", "Star Wars: Episode IV", "Casino", "Heat"]
 GENEROS_HOME = ["Sci-Fi", "Comedy", "Action"]
+USUARIO_DEMO = "100"
 
 
 def montar_destaques(filmes):
@@ -15,16 +17,24 @@ def montar_destaques(filmes):
     return escolhidos or [f for f in filmes if f["backdrop_url"]][:5]
 
 
-def montar_home(filmes):
+def montar_home(filmes, notas_por_usuario=None, notas_por_filme=None, filmes_por_id=None):
     fileiras_genero = [
         {"titulo": f"Top 10 {GENEROS_PT.get(genero, genero)}", "filmes": top10_por_genero(filmes, genero)}
         for genero in GENEROS_HOME
     ]
+
+    fileira_recomendados = []
+    if notas_por_usuario is not None and notas_por_filme is not None and filmes_por_id is not None:
+        recomendados = recomendar_item_item(USUARIO_DEMO, notas_por_usuario, notas_por_filme, filmes_por_id)
+        if recomendados:
+            fileira_recomendados = [{"titulo": "Recomendados pra você", "filmes": recomendados}]
+
     return {
         "destaques": montar_destaques(filmes),
         "fileiras": [
             {"titulo": "Top 10 mais bem avaliados", "filmes": top10(filmes)},
             {"titulo": "Mais avaliados pelo público", "filmes": mais_avaliados(filmes)},
+            *fileira_recomendados,
             *[f for f in fileiras_genero if f["filmes"]],
             {"titulo": "Descubra algo novo", "filmes": aleatorio(filmes)},
         ],
