@@ -11,16 +11,17 @@ MAX_SEMENTES = 30
 LIMIT = 10
 
 
-def _cosseno_item(notas_filme_a, notas_filme_b):
+def _norma(notas):
+    return sum(v * v for v in notas.values()) ** 0.5
+
+
+def _cosseno_item(notas_filme_a, notas_filme_b, norma_a, norma_b):
+    if norma_a == 0 or norma_b == 0:
+        return None
     comuns = notas_filme_a.keys() & notas_filme_b.keys()
     if len(comuns) < MIN_CO_AVALIACOES:
         return None
-
     produto = sum(notas_filme_a[u] * notas_filme_b[u] for u in comuns)
-    norma_a = sum(v * v for v in notas_filme_a.values()) ** 0.5
-    norma_b = sum(v * v for v in notas_filme_b.values()) ** 0.5
-    if norma_a == 0 or norma_b == 0:
-        return None
     return produto / (norma_a * norma_b)
 
 
@@ -36,18 +37,28 @@ def recomendar(user_id, notas_por_usuario, notas_por_filme, filmes_por_id, limit
     )[:MAX_SEMENTES]
     vistos = notas_alvo.keys()
 
+    # Norma de cada filme calculada uma única vez (evita refazer a conta pra
+    # cada semente — era o principal gargalo com 1M de avaliações).
+    normas = {
+        movie_id: _norma(notas_por_filme[movie_id])
+        for movie_id in {*filmes_por_id, *sementes}
+        if movie_id in notas_por_filme
+    }
+
     scores = {}
     for semente_id in sementes:
         notas_semente = notas_por_filme.get(semente_id)
-        if not notas_semente:
+        norma_semente = normas.get(semente_id)
+        if not notas_semente or not norma_semente:
             continue
         for candidato_id in filmes_por_id:
             if candidato_id in vistos or candidato_id == semente_id:
                 continue
             notas_candidato = notas_por_filme.get(candidato_id)
-            if not notas_candidato:
+            norma_candidato = normas.get(candidato_id)
+            if not notas_candidato or not norma_candidato:
                 continue
-            sim = _cosseno_item(notas_semente, notas_candidato)
+            sim = _cosseno_item(notas_semente, notas_candidato, norma_semente, norma_candidato)
             if sim is not None and sim > 0:
                 scores[candidato_id] = scores.get(candidato_id, 0.0) + sim
 
