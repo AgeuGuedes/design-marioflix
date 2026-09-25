@@ -16,22 +16,18 @@ def montar_destaques(filmes):
     return escolhidos or [f for f in filmes if f["backdrop_url"]][:5]
 
 
-def montar_home(filmes, filmes_recomendados=None):
+def montar_home(filmes, fileiras_recomendadas=None):
     fileiras_genero = [
         {"titulo": f"Top 10 {GENEROS_PT.get(genero, genero)}", "filmes": top10_por_genero(filmes, genero)}
         for genero in GENEROS_HOME
     ]
-
-    fileira_recomendados = []
-    if filmes_recomendados:
-        fileira_recomendados = [{"titulo": "Recomendados pra você", "filmes": filmes_recomendados}]
 
     return {
         "destaques": montar_destaques(filmes),
         "fileiras": [
             {"titulo": "Top 10 mais bem avaliados", "filmes": top10(filmes)},
             {"titulo": "Mais avaliados pelo público", "filmes": mais_avaliados(filmes)},
-            *fileira_recomendados,
+            *[f for f in (fileiras_recomendadas or []) if f["filmes"]],
             *[f for f in fileiras_genero if f["filmes"]],
             {"titulo": "Descubra algo novo", "filmes": aleatorio(filmes)},
         ],

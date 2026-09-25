@@ -8,6 +8,7 @@ from src.data.loader import carregar_filmes
 from src.data.ratings_matrix import carregar_matriz_usuario_item
 from src.recommenders.content_recommender import filmes_parecidos
 from src.recommenders.item_based_recommender import recomendar as recomendar_item_item
+from src.recommenders.user_based_recommender import recomendar as recomendar_user_user
 from src.services.catalog_service import buscar_filme
 from src.services.home_service import USUARIO_DEMO, montar_home
 
@@ -23,12 +24,21 @@ NOTAS_POR_USUARIO, NOTAS_POR_FILME = carregar_matriz_usuario_item()
 
 # Calculado uma única vez na subida do servidor: é sempre o mesmo usuário de
 # exemplo, então recalcular a cada visita só desperdiçaria tempo de resposta.
-FILMES_RECOMENDADOS = recomendar_item_item(USUARIO_DEMO, NOTAS_POR_USUARIO, NOTAS_POR_FILME, FILMES_POR_ID)
+FILEIRAS_RECOMENDADAS = [
+    {
+        "titulo": "Recomendados pra você",
+        "filmes": recomendar_item_item(USUARIO_DEMO, NOTAS_POR_USUARIO, NOTAS_POR_FILME, FILMES_POR_ID),
+    },
+    {
+        "titulo": "Quem tem gosto parecido com o seu curtiu",
+        "filmes": recomendar_user_user(USUARIO_DEMO, NOTAS_POR_USUARIO, NOTAS_POR_FILME, FILMES_POR_ID),
+    },
+]
 
 
 @app.get("/")
 def home(request: Request):
-    contexto = montar_home(FILMES, FILMES_RECOMENDADOS)
+    contexto = montar_home(FILMES, FILEIRAS_RECOMENDADAS)
     return templates.TemplateResponse(request, "home.html", contexto)
 
 
