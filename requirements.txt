@@ -5,3 +5,7 @@ python-multipart
 requests
 pytest
 httpx
+pandas
+numpy
+scipy
+scikit-learn

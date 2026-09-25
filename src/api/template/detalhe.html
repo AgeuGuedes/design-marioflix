@@ -43,6 +43,60 @@
           </div>
           {% endif %}
         </div>
+
+        {% set rotulos = {1: "Ruim", 2: "Fraco", 3: "Regular", 4: "Muito bom", 5: "Incrível"} %}
+        <form class="avaliar {{ 'avaliado' if nota_usuario else '' }}" method="post" action="/avaliar/{{ filme.movieId }}">
+          <div class="avaliar-topo">
+            <h2 class="avaliar-titulo">{{ 'Você avaliou este filme' if nota_usuario else 'Você já assistiu?' }}</h2>
+            {% if nota_usuario %}<span class="avaliar-chip">✓ Assistido</span>{% endif %}
+          </div>
+
+          <p class="avaliar-ajuda">
+            {% if nota_usuario %}
+            Ele já não aparece mais nas suas recomendações. Quanto mais filmes você avalia, mais as sugestões combinam com você.
+            {% else %}
+            Dê suas estrelas: o filme fica marcado como assistido e sai das suas recomendações. Quanto mais você avalia, melhores ficam as sugestões.
+            {% endif %}
+          </p>
+
+          <svg class="estrela-defs" width="0" height="0" aria-hidden="true">
+            <defs>
+              <linearGradient id="estrela-ouro" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#fff0a3"/>
+                <stop offset="0.55" stop-color="#ffc933"/>
+                <stop offset="1" stop-color="#f2a100"/>
+              </linearGradient>
+              <linearGradient id="estrela-vermelha" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#ff7a8a"/>
+                <stop offset="0.55" stop-color="#ef233c"/>
+                <stop offset="1" stop-color="#b3122a"/>
+              </linearGradient>
+            </defs>
+          </svg>
+
+          <div class="estrelas" role="group" aria-label="Avaliar de 1 a 5 estrelas">
+            {% for n in range(5, 0, -1) %}
+            <button type="submit" name="nota" value="{{ n }}"
+                    class="estrela {{ 'acesa' if nota_usuario and n <= nota_usuario else '' }}"
+                    style="--i: {{ n }}" data-nota="{{ n }}" data-rotulo="{{ rotulos[n] }}"
+                    aria-label="{{ n }} de 5: {{ rotulos[n] }}">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.83 5.93 6.5.85-4.76 4.5 1.2 6.44L12 17.1l-5.77 3.22 1.2-6.44-4.76-4.5 6.5-.85z"/></svg>
+              <span class="estrela-num">{{ n }}</span>
+            </button>
+            {% endfor %}
+          </div>
+
+          <p class="avaliar-rotulo"
+             data-padrao="{{ (nota_usuario|int ~ ' de 5 · ' ~ rotulos[nota_usuario|int]) if nota_usuario else 'Passe o mouse nas estrelas e clique pra avaliar' }}">
+            {{ (nota_usuario|int ~ ' de 5 · ' ~ rotulos[nota_usuario|int]) if nota_usuario else 'Passe o mouse nas estrelas e clique pra avaliar' }}
+          </p>
+
+          {% if nota_usuario %}
+          <button type="submit" name="nota" value="0" class="remover">Desmarcar como assistido</button>
+          {% else %}
+          <p class="avaliar-dica">Com 3 filmes avaliados, a página inicial passa a mostrar sugestões só pra você.</p>
+          {% endif %}
+        </form>
       </div>
     </div>
   </div>
@@ -61,6 +115,9 @@
           <img class="poster" src="{{ parecido.poster_url }}" alt="Pôster de {{ parecido.title }}" loading="lazy">
           {% else %}
           <div class="poster poster-fallback" style="background: linear-gradient(160deg, hsl({{ parecido.hue }},45%,18%), hsl({{ (parecido.hue + 40) % 360 }},45%,32%));"></div>
+          {% endif %}
+          {% if parecido.movieId|int in assistidos %}
+          <span class="poster-visto">✓ Assistido</span>
           {% endif %}
           {% if parecido.nota_media %}
           <span class="poster-rating">★ {{ parecido.nota_media }}</span>

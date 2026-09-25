@@ -52,6 +52,9 @@
           {% else %}
           <div class="poster poster-fallback" style="background: linear-gradient(160deg, hsl({{ filme.hue }},45%,18%), hsl({{ (filme.hue + 40) % 360 }},45%,32%));"></div>
           {% endif %}
+          {% if filme.movieId|int in assistidos %}
+          <span class="poster-visto">✓ Assistido</span>
+          {% endif %}
           {% if filme.nota_media %}
           <span class="poster-rating">★ {{ filme.nota_media }}</span>
           {% endif %}

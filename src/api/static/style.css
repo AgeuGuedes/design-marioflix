@@ -375,3 +375,154 @@ a:hover { color: var(--accent); }
   .detail-poster { flex-basis: auto; width: 160px; }
   .detail-hero { padding-left: 24px; padding-right: 24px; }
 }
+
+/* ---------- Avaliar um filme ---------- */
+.avaliar {
+  margin-top: 28px;
+  max-width: 480px;
+  padding: 22px 24px 20px;
+  background: linear-gradient(160deg, rgba(46, 28, 32, 0.85), rgba(23, 15, 17, 0.7));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  backdrop-filter: blur(6px);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.avaliar.avaliado { border-color: rgba(255, 201, 51, 0.35); box-shadow: 0 0 36px rgba(255, 201, 51, 0.08); }
+
+.avaliar-topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.avaliar-titulo { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: 0.1px; }
+.avaliar-ajuda { margin: 8px 0 0; font-size: 13px; line-height: 1.55; color: var(--text-muted); }
+
+.avaliar-chip {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #241700;
+  background: linear-gradient(180deg, #ffe07a, #ffbf1f);
+  border-radius: 999px;
+  animation: chip-entra 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.estrela-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* As estrelas ficam na ordem 5..1 no HTML e são invertidas na tela (1 à esquerda, 5 à direita).
+   Quem acende é o JavaScript: "previa" (vermelho) com o mouse em cima e "acesa" (dourado) na nota marcada. */
+.estrelas { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+.estrela {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 52px;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.estrela svg { display: block; width: 46px; height: 46px; overflow: visible; }
+.estrela path {
+  fill: #261619;
+  stroke: #6a4d54;
+  stroke-width: 1.1;
+  stroke-linejoin: round;
+  transition: fill 0.2s, stroke 0.2s, filter 0.2s;
+}
+.estrela-num { font-size: 12px; font-weight: 700; color: var(--text-dim); transition: color 0.2s; }
+
+/* Nota marcada: dourado forte, bem visível */
+.estrela.acesa path {
+  fill: url(#estrela-ouro);
+  stroke: #ffd24d;
+  filter: drop-shadow(0 0 8px rgba(255, 196, 40, 0.7));
+  transition-delay: calc(var(--i) * 35ms);
+}
+.estrela.acesa .estrela-num { color: #ffc933; }
+
+/* Mouse em cima: as estrelas de 1 até a apontada acendem em vermelho, em onda */
+.estrelas.em-previa .estrela:not(.previa) path { fill: #261619; stroke: #6a4d54; filter: none; transition-delay: 0s; }
+.estrelas.em-previa .estrela:not(.previa) .estrela-num { color: var(--text-dim); }
+.estrela.previa path {
+  fill: url(#estrela-vermelha);
+  stroke: #ff5a6e;
+  filter: drop-shadow(0 0 9px rgba(239, 35, 60, 0.75));
+  transition-delay: calc(var(--i) * 35ms);
+}
+.estrela.previa .estrela-num { color: #ff6b7d; }
+
+.estrela:hover { transform: scale(1.14) rotate(-6deg); }
+.estrela:active { transform: scale(0.9); }
+.estrela:focus-visible { outline: 2px solid rgba(255, 210, 77, 0.85); outline-offset: 3px; border-radius: 12px; }
+
+/* Ao abrir um filme já avaliado, e ao clicar, as estrelas acendem uma a uma: da 1 até a nota. */
+.avaliado .estrela.acesa svg, .enviando .estrela.acesa svg {
+  animation: estrela-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: calc(var(--i) * 110ms);
+}
+
+.avaliar-rotulo {
+  margin: 10px 0 0;
+  min-height: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  transition: opacity 0.09s, transform 0.09s;
+}
+.avaliar-rotulo.trocando { opacity: 0; transform: translateY(3px); }
+
+.avaliar-dica { margin: 12px 0 0; font-size: 12px; color: var(--text-dim); }
+
+.remover {
+  margin-top: 12px;
+  padding: 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text-dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.remover:hover { color: var(--text); }
+
+.avaliar.enviando { pointer-events: none; }
+
+@keyframes estrela-pop {
+  0% { transform: scale(0.3) rotate(-30deg); opacity: 0; }
+  55% { transform: scale(1.4) rotate(12deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+@keyframes chip-entra {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Selo nos cartazes dos filmes que o visitante já assistiu */
+.poster-visto {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #241700;
+  background: linear-gradient(180deg, #ffe07a, #ffbf1f);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avaliado .estrela.acesa svg, .enviando .estrela.acesa svg, .avaliar-chip { animation: none; }
+  .estrela, .estrela path, .estrela-num, .avaliar-rotulo { transition: none; }
+}
+
+@media (max-width: 900px) {
+  .avaliar { max-width: 100%; }
+  .estrela { width: 46px; }
+  .estrela svg { width: 40px; height: 40px; }
+}
